@@ -21,7 +21,7 @@
 
 ---	
 ### Introduction
-Long-read sequencing enables the comprehensive discovery of structural variations (SVs). However, it is still non-trivial to achieve high sensitivity and performance simultaneously due to the complex SV characteristics implied by noisy long reads. Therefore, we propose cuteFC, an accurate and efficient regenotyping method. Benchmarks on real Pacific Biosciences (PacBio) and Oxford Nanopore Technology (ONT) datasets demonstrate that cuteFC has better yields and scalability than state-of-the-art tools.
+Accurate genotype assignment for SVs remains challenging, especially in large-scale joint calling. We develop cuteFC to achieve accurate and efficient regenotyping of SVs through a force-calling approach. Benchmarking results demonstrated that cuteFC outperforms state-of-the-art methods with 2%~5% higher F1 scores. SV joint-calling within the cohort revealed that cuteFC constructs the higher-quality genomic atlas with minimal computational resources. These results prove cuteFC to be a scalable and robust approach suitable for clinical applications, population studies, and related fields. 
 
 For more detailed implementation of SV benchmarks, we show an example [here](https://github.com/tjiangHIT/cuteFC/tree/master/src/documentation).
 
@@ -100,4 +100,4 @@ Cao S et al. Re-genotyping structural variants through an accurate force-calling
 	
 ---
 ### Contact
-For advising, bug reporting and requiring help, please post on [Github Issue](https://github.com/tjiangHIT/cuteFC/issues) or contact tjiang@hit.edu.cn.
+For advising, bug reporting, and requiring help, please post on [Github Issue](https://github.com/tjiangHIT/cuteFC/issues) or contact tjiang@hit.edu.cn.
