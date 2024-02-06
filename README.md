@@ -100,4 +100,4 @@ Cao S et al. Re-genotyping structural variants through an accurate force-calling
 	
 ---
 ### Contact
-For advising, bug reporting, and requiring help, please post on [Github Issue](https://github.com/tjiangHIT/cuteFC/issues) or contact tjiang@hit.edu.cn.
+For advising, bug reporting, and requiring help, please post on [Github Issue](https://github.com/Meltpinkg/cuteFC/issues) or contact tjiang@hit.edu.cn.
