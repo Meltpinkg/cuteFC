@@ -91,11 +91,11 @@ bgzip -c tools/sniffles2.sort.vcf > tools/sniffles2.sort.vcf.gz
 tabix tools/sniffles2.sort.vcf.gz
 ```
 
-# Run cuteSV2
+# Run cuteSV2/cuteFC
 
-8a) Run cuteSV2 (v2.1.0):
+8a) Run cuteSV2 (v2.1.0)/cuteFC (v1.0.0):
 ```sh
-cuteSV alns/HG002_all.bam ref/human_hs37d5.fasta tools/cutesv.call.vcf ./ --max_cluster_bias_INS 1000 --diff_ratio_merging_INS 0.9 --max_cluster_bias_DEL 1000 --diff_ratio_merging_DEL 0.5 -Ivcf giab/HG002_SVs_Tier1_v0.6.vcf -q 10 -L -1
+cuteSV/cuteFC alns/HG002_all.bam ref/human_hs37d5.fasta tools/cutesv.call.vcf ./ --max_cluster_bias_INS 1000 --diff_ratio_merging_INS 0.9 --max_cluster_bias_DEL 1000 --diff_ratio_merging_DEL 0.5 -Ivcf giab/HG002_SVs_Tier1_v0.6.vcf -q 10 -L -1
 ```
 8b) Prepare for truvari:
 ```sh
