@@ -23,9 +23,9 @@
 ### Introduction
 Long-read sequencing enables the comprehensive discovery of structural variations (SVs). However, it is still non-trivial to achieve high sensitivity and performance simultaneously due to the complex SV characteristics implied by noisy long reads. Therefore, we propose cuteFC, an accurate and efficient regenotyping method. Benchmarks on real Pacific Biosciences (PacBio) and Oxford Nanopore Technology (ONT) datasets demonstrate that cuteFC has better yields and scalability than state-of-the-art tools.
 
-
-
 For more detailed implementation of SV benchmarks, we show an example [here](https://github.com/tjiangHIT/cuteFC/tree/master/src/documentation).
+
+BTW, the whole functions in cuteFC have been integrated into our previous SV detector, [cuteSV](https://github.com/tjiangHIT/cuteSV)
 
 ---
 ### Dependence
