@@ -1,0 +1,7 @@
+scipy
+pysam
+Biopython
+Cigar
+numpy
+pyvcf3
+scikit-learn
