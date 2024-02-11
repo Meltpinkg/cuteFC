@@ -15,7 +15,7 @@ conda install -c bioconda sniffles==1.0.12
 ```sh
 conda create -n test_fc python=3.10
 conda activate test_fc
-conda install -c bioconda sniffles==2.0.7 cuteSV==2.1.0 svjedi==1.1.6 truvari==3.5.0 samtools tabix
+conda install -c bioconda sniffles==2.0.7 cuteFC==1.0.0 svjedi==1.1.6 truvari==3.5.0 samtools tabix
 ```
 
 # Get data
@@ -91,18 +91,18 @@ bgzip -c tools/sniffles2.sort.vcf > tools/sniffles2.sort.vcf.gz
 tabix tools/sniffles2.sort.vcf.gz
 ```
 
-# Run cuteSV2/cuteFC
+# Run cuteFC
 
-8a) Run cuteSV2 (v2.1.0)/cuteFC (v1.0.0):
+8a) Run cuteFC (v1.0.0):
 ```sh
-cuteSV/cuteFC alns/HG002_all.bam ref/human_hs37d5.fasta tools/cutesv.call.vcf ./ --max_cluster_bias_INS 1000 --diff_ratio_merging_INS 0.9 --max_cluster_bias_DEL 1000 --diff_ratio_merging_DEL 0.5 -Ivcf giab/HG002_SVs_Tier1_v0.6.vcf -q 10 -L -1
+ccuteFC alns/HG002_all.bam ref/human_hs37d5.fasta tools/cutefc.call.vcf ./ -Ivcf giab/HG002_SVs_Tier1_v0.6.vcf --max_cluster_bias_INS 1000 --diff_ratio_merging_INS 0.9 --max_cluster_bias_DEL 1000 --diff_ratio_merging_DEL 0.5 -q 10 -L -1
 ```
 8b) Prepare for truvari:
 ```sh
-grep '#' tools/cutesv.call.vcf > tools/cutesv.sort.vcf
-grep -v '#' tools/cutesv.call.vcf | sort -k 1,1 -k 2,2n | awk -F '\t' '{split($10,X,":"); if(X[1]!="0/0"&&X[1]!="./.") print $0}' >> tools/cutesv.sort.vcf
-bgzip -c tools/cutesv.sort.vcf > tools/cutesv.sort.vcf.gz
-tabix tools/cutesv.sort.vcf.gz
+grep '#' tools/cutefc.call.vcf > tools/cutefc.sort.vcf
+grep -v '#' tools/cutefc.call.vcf | sort -k 1,1 -k 2,2n | awk -F '\t' '{split($10,X,":"); if(X[1]!="0/0"&&X[1]!="./.") print $0}' >> tools/cutefc.sort.vcf
+bgzip -c tools/cutefc.sort.vcf > tools/cutefc.sort.vcf.gz
+tabix tools/cutefc.sort.vcf.gz
 ```
 
 # Run SVJedi
@@ -123,7 +123,7 @@ tabix tools/svjedi.sort.vcf.gz
 
 10) Compare to NIST ground truth via truvari (v3.5.0):
 ```sh
-for tools in {sniffles1, sniffles2, cutesv, svjedi}
+for tools in {sniffles1, sniffles2, cutefc, svjedi}
 do
         truvari bench -b giab/HG002_SVs_Tier1_v0.6.filter.vcf.gz -c tools/$i.sort.vcf.gz --includebed giab/HG002_SVs_Tier1_v0.6.bed -o cmp -p 0 -r 2 -P 1 --sizemax 1000000
 done
