@@ -6,20 +6,20 @@ with open('README.md') as f:
     readme = f.read()
 
 setup(
-    name = "cuteSV",
-    version = "2.1.0",
-    description = "Long-read-based human genomic structural variation detection with cuteSV",
-    author = "Jiang Tao",
+    name = "cuteFC",
+    version = "1.0.0",
+    description = "Regenotyping structural variants through an accurate and efficient force-calling method",
+    author = "Jiang Tao & Cao Shuqi",
     author_email = "tjiang@hit.edu.cn",
-    url = "https://github.com/tjiangHIT/cuteSV",
+    url = "https://github.com/tjiangHIT/cuteFC",
     license = "MIT",
     packages = find_packages("src"),
     package_dir = {"": "src"},
     data_files = [("", ["LICENSE"])],
-    scripts=['src/cuteSV/cuteSV'],
+    scripts=['src/cuteFC/cuteFC'],
     # long_description = LONG_DESCRIPTION,
     long_description = readme,
     long_description_content_type = 'text/markdown',
     zip_safe = False,
-    install_requires = ['scipy', 'Cython', 'pysam', 'Biopython', 'Cigar', 'numpy', 'pyvcf', 'scikit-learn']
+    install_requires = ['scipy', 'pysam', 'Biopython', 'Cigar', 'numpy', 'pyvcf3', 'scikit-learn']
 )
