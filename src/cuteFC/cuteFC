@@ -10,18 +10,6 @@
 
 import pysam
 import cigar
-<<<<<<< HEAD
-from cuteSV.cuteSV_Description import parseArgs
-from multiprocessing import Pool,Manager,Queue, current_process
-from cuteSV.CommandRunner import *
-# from resolution_type import * 
-from cuteSV.cuteSV_resolveINV import run_inv
-from cuteSV.cuteSV_resolveTRA import run_tra
-from cuteSV.cuteSV_resolveINDEL import run_ins, run_del
-from cuteSV.cuteSV_resolveDUP import run_dup
-from cuteSV.cuteSV_genotype import generate_output, generate_pvcf, load_valuable_chr, load_bed, Generation_VCF_header
-from cuteSV.cuteSV_forcecalling import force_calling_chrom
-=======
 from cuteFC.cuteSV_Description import parseArgs
 from multiprocessing import Pool,Manager,Queue, current_process
 from cuteFC.CommandRunner import *
@@ -32,7 +20,6 @@ from cuteFC.cuteSV_resolveINDEL import run_ins, run_del
 from cuteFC.cuteSV_resolveDUP import run_dup
 from cuteFC.cuteSV_genotype import generate_output, generate_pvcf, load_valuable_chr, load_bed, Generation_VCF_header
 from cuteFC.cuteSV_forcecalling import force_calling_chrom
->>>>>>> a3c6e03487e3c6226a49decf9f348450ec6f4707
 import os
 import argparse
 import logging
@@ -206,13 +193,10 @@ def analysis_split_read(split_read, SV_size, RLength, read_name, candidate, MaxS
     #0			#1			#2			#3		#4	#5
     '''
     SP_list = sorted(split_read, key = lambda x:x[0])
-<<<<<<< HEAD
     
     # print(read_name)
     # for i in SP_list:
     #     print(i)
-=======
->>>>>>> a3c6e03487e3c6226a49decf9f348450ec6f4707
 
     # detect INS involoved in a translocation
     trigger_INS_TRA = 0	
@@ -1041,13 +1025,8 @@ def main_ctrl(args, argv):
             if pos < local_ref_len:
                 Task_list.append([i[0], pos, local_ref_len])
     bed_regions = load_bed(args.include_bed, Task_list)
-<<<<<<< HEAD
-    #'''
-    
-=======
     
     #'''
->>>>>>> a3c6e03487e3c6226a49decf9f348450ec6f4707
     candidates={}
     candidates["DEL"]=list()
     candidates["INS"]=list()
@@ -1078,14 +1057,8 @@ def main_ctrl(args, argv):
     pids = [process.pid for process in analysis_pools._pool]
     analysis_pools.close()
     analysis_pools.join()
-<<<<<<< HEAD
-    #'''
-    logging.info("Rebuilding signatures of structural variants.")
-
-=======
     logging.info("Rebuilding signatures of structural variants.")
     #'''
->>>>>>> a3c6e03487e3c6226a49decf9f348450ec6f4707
     analysis_pools = Pool(processes=int(args.threads))
     paras=[]
     for sv_type in SVTYPES:
@@ -1107,11 +1080,6 @@ def main_ctrl(args, argv):
     del candidates
     gc.collect()
     logging.info("Rebuilding signatures completed.")
-<<<<<<< HEAD
-    #'''
-=======
-
->>>>>>> a3c6e03487e3c6226a49decf9f348450ec6f4707
     result = list()
 
     if args.Ivcf != None:
