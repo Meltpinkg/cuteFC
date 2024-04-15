@@ -246,6 +246,7 @@ def generate_output(args, semi_result, reference, chrom, temporary_dir):
 
     # genotype_trigger = TriggerGT[args.genotype]
 
+<<<<<<< HEAD
     f=open("%sresults/%s.pickle"%(temporary_dir,chrom), "wb")
     semi_result.sort(key = lambda x:int(x[2]))
     action = args.genotype
@@ -257,6 +258,16 @@ def generate_output(args, semi_result, reference, chrom, temporary_dir):
     fa_file.close()
     lines=[]
     BATCH_SIZE=1000
+=======
+    semi_result.sort(key = lambda x:int(x[2]))
+    action = args.genotype
+    fa_file = pysam.FastaFile(reference)
+    ref_chrom=fa_file.fetch(chrom)
+    fa_file.close()
+    lines=[]
+    BATCH_SIZE=1000
+    f=open("%sresults/%s.pickle"%(temporary_dir,chrom), "wb")
+>>>>>>> a3c6e03487e3c6226a49decf9f348450ec6f4707
     for i in semi_result:
         if i[1] in ["DEL", "INS"]:
             if abs(int(float(i[3]))) > args.max_size and args.max_size != -1:

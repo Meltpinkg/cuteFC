@@ -11,7 +11,7 @@ VERSION = '1.0.0'
 
 class cuteSVdp(object):
 	'''
-	Detailed descriptions of cuteSV version and its parameters.
+	Detailed descriptions of cuteFC version and its parameters.
 	'''
 
 	USAGE="""\
@@ -20,17 +20,12 @@ class cuteSVdp(object):
 	Author: Tao Jiang
 	Contact: tjiang@hit.edu.cn
 
-	If you use cuteSV in your work, please cite:
-		Jiang T et al. Long-read-based human genomic structural variation detection with cuteSV. 
-		Genome Biol 21,189(2020). https://doi.org/10.1186/s13059-020-02107-y
-
-
 	Suggestions:
 
 	For PacBio CLR data:
-		--max_cluster_bias_INS		100
-		--diff_ratio_merging_INS	0.3
-		--max_cluster_bias_DEL	200
+		--max_cluster_bias_INS		500
+		--diff_ratio_merging_INS	0.5
+		--max_cluster_bias_DEL	1000
 		--diff_ratio_merging_DEL	0.5
 
 	For PacBio CCS(HIFI) data:
@@ -40,18 +35,18 @@ class cuteSVdp(object):
 		--diff_ratio_merging_DEL	0.5
 
 	For ONT data:
-		--max_cluster_bias_INS		100
-		--diff_ratio_merging_INS	0.3
-		--max_cluster_bias_DEL	100
-		--diff_ratio_merging_DEL	0.3
+		--max_cluster_bias_INS		1000
+		--diff_ratio_merging_INS	0.5
+		--max_cluster_bias_DEL	1000
+		--diff_ratio_merging_DEL	0.5
 
 
 	"""%(VERSION)
 
-	# MinSizeDel = 'For current version of cuteSV, it can detect deletions larger than this size.'
+	# MinSizeDel = 'For current version of cuteFC, it can detect deletions larger than this size.'
 
 def parseArgs(argv):
-	parser = argparse.ArgumentParser(prog="cuteSV", 
+	parser = argparse.ArgumentParser(prog="cuteFC", 
 		description=cuteSVdp.USAGE, 
 		formatter_class=argparse.RawDescriptionHelpFormatter)
 
@@ -110,7 +105,7 @@ def parseArgs(argv):
 		type = int)
 	GroupSignaturesCollect.add_argument('-q', '--min_mapq', 
 		help = "Minimum mapping quality value of alignment to be taken into account.[%(default)s]", 
-		default = 20, 
+		default = 10, 
 		type = int)
 	GroupSignaturesCollect.add_argument('-r', '--min_read_len', 
 		help = "Ignores reads that only report alignments with not longer than bp.[%(default)s]", 
@@ -261,7 +256,7 @@ def parseArgs(argv):
 def Generation_VCF_header(file, contiginfo, sample, argv):
 	# General header
 	file.write("##fileformat=VCFv4.2\n")
-	file.write("##source=cuteSV-%s\n"%(VERSION))
+	file.write("##source=cuteFC-%s\n"%(VERSION))
 	import time
 	file.write("##fileDate=%s\n"%(time.strftime('%Y-%m-%d %H:%M:%S %w-%Z',time.localtime())))
 	for i in contiginfo:
@@ -298,4 +293,4 @@ def Generation_VCF_header(file, contiginfo, sample, argv):
 	file.write("##FORMAT=<ID=PL,Number=G,Type=Integer,Description=\"# Phred-scaled genotype likelihoods rounded to the closest integer\">\n")
 	file.write("##FORMAT=<ID=GQ,Number=1,Type=Integer,Description=\"# Genotype quality\">\n")
 
-	file.write("##CommandLine=\"cuteSV %s\"\n"%(" ".join(argv)))
+	file.write("##CommandLine=\"cuteFC %s\"\n"%(" ".join(argv)))
