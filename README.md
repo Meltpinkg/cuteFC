@@ -25,8 +25,6 @@ Accurate genotype assignment for SVs remains challenging, especially in large-sc
 
 For more detailed implementation of SV benchmarks, we show an example [here](https://github.com/tjiangHIT/cuteFC/tree/master/src/documentation).
 
-BTW, the whole functions in cuteFC have been integrated into our previous SV detector, [cuteSV](https://github.com/tjiangHIT/cuteSV)
-
 ---
 ### Dependence
 	
@@ -80,7 +78,7 @@ BTW, the whole functions in cuteFC have been integrated into our previous SV det
 |--genotype|Enable to generate genotypes.|False|
 |--gt_round|Maximum round of iteration for alignments searching if perform genotyping.|500|
 |--read_range|The interval range for counting reads distribution.|1000|
-|-Ivcf|Optional given vcf file. Enable to perform force calling.|NULL|
+|--detect_large_ins|Enable the detection of large insertions.|False|
 |--max_cluster_bias_INS|Maximum distance to cluster read together for insertion.|100|
 |--diff_ratio_merging_INS|Do not merge breakpoints with basepair identity more than the ratio of *default* for insertion.|0.3|
 |--max_cluster_bias_DEL|Maximum distance to cluster read together for deletion.|200|
