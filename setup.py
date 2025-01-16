@@ -7,11 +7,11 @@ with open('README.md') as f:
 
 setup(
     name = "cuteFC",
-    version = "1.0.0",
+    version = "1.0.1",
     description = "Regenotyping structural variants through an accurate and efficient force-calling method",
     author = "Jiang Tao & Cao Shuqi",
     author_email = "tjiang@hit.edu.cn",
-    url = "https://github.com/tjiangHIT/cuteFC",
+    url = "https://github.com/Meltpinkg/cuteFC",
     license = "MIT",
     packages = find_packages("src"),
     package_dir = {"": "src"},

@@ -2,14 +2,14 @@
  * All rights Reserved, Designed By HIT-Bioinformatics   
  * @Title:  cuteSV_Description.py
  * @author: tjiang & sqcao & zdzhang
- * @date: Feb. 6th 2024
- * @version V1.0.0
+ * @date: Jan. 16th 2025
+ * @version V1.0.1
 '''
 import argparse
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
-class cuteSVdp(object):
+class cuteFCdp(object):
 	'''
 	Detailed descriptions of cuteFC version and its parameters.
 	'''
@@ -43,11 +43,10 @@ class cuteSVdp(object):
 
 	"""%(VERSION)
 
-	# MinSizeDel = 'For current version of cuteFC, it can detect deletions larger than this size.'
 
 def parseArgs(argv):
 	parser = argparse.ArgumentParser(prog="cuteFC", 
-		description=cuteSVdp.USAGE, 
+		description=cuteFCdp.USAGE, 
 		formatter_class=argparse.RawDescriptionHelpFormatter)
 
 	parser.add_argument('--version', '-v', 
@@ -68,6 +67,14 @@ def parseArgs(argv):
 	parser.add_argument('work_dir', 
 		type = str, 
 		help = "Work-directory for distributed jobs")
+
+	# **************Parameters in force calling******************
+	GroupGenotype = parser.add_argument_group('Force calling')
+	GroupGenotype.add_argument('-Ivcf', #'--MERGED_VCF',
+		help = "Given essential vcf file of target SVs. Enable to perform force calling. [NULL]",
+		default = None,
+        type = str,
+		required=True)
 
 	# ************** Other Parameters******************
 	parser.add_argument('-t', '--threads', 
@@ -123,8 +130,6 @@ def parseArgs(argv):
 		help = "Optional given bed file. Only detect SVs in regions in the BED file. [NULL]",
 		default = None,
         type = str)
-	# The min_read_len in last version is 2000.
-	# signatures with overlap need to be filtered
 
 	# **************Parameters in clustering******************
 	GroupSVCluster = parser.add_argument_group('Generation of SV clusters')
@@ -146,7 +151,6 @@ def parseArgs(argv):
 		type = int)
 
 	# **************Parameters in genotyping******************
-	GroupGenotype = parser.add_argument_group('Computing genotypes')
 	GroupGenotype.add_argument('--genotype',
 		help = "Enable to generate genotypes.",
 		action="store_true")
@@ -158,28 +162,9 @@ def parseArgs(argv):
 		help = "The interval range for counting reads distribution.[%(default)s]", 
 		default = 1000, 
 		type = int)
-	# GroupGenotype.add_argument('--hom', 
-	# 	help = "Threshold on allele frequency for homozygous.[%(default)s]", 
-	# 	default = 0.8, 
-	# 	type = float)
-	# GroupGenotype.add_argument('--het', 
-	# 	help = "Threshold on allele frequency for heterozygous.[%(default)s].", 
-	# 	default = 0.2, 
-	# 	type = float)
-
-	# Just a parameter for debug.
-	# Will be removed in future.
-	# GroupSVCluster.add_argument('--preset',
-	# 	help = "Parameter presets for different sequencing technologies (pbclr/pbccs/ont).[%(default)s]",
-	# 	default = "pbccs",
-	# 	type = str)
-
-	# **************Parameters in force calling******************
-	GroupGenotype = parser.add_argument_group('Force calling')
-	GroupGenotype.add_argument('-Ivcf', #'--MERGED_VCF',
-		help = "Optional given vcf file. Enable to perform force calling. [NULL]",
-		default = None,
-        type = str)
+	GroupGenotype.add_argument('--detect_large_ins', 
+		help = "Enable the detection of large insertions.",
+		action="store_true")
 
 	# **************Advanced Parameters******************
 	GroupAdvanced = parser.add_argument_group('Advanced')
@@ -238,17 +223,6 @@ def parseArgs(argv):
 		help = "The ratio of reads remained in cluster. Set lower when the alignment data have high quality but recommand over 0.5.[%(default)s]", 
 		default = 1.0, 
 		type = float)
-
-	# parser.add_argument('-d', '--max_distance', 
-	# 	help = "Maximum distance to group SV together..[%(default)s]", 
-	# 	default = 1000, type = int)
-
-
-
-	# These parameters are drawn lessons from pbsv v2.2.0
-	# parser.add_argument('--min_del_size', 
-	# 	help = "Minimum size of a deletion.[%(default)s]", 
-	# 	default = 20, type = int)
 
 	args = parser.parse_args(argv)
 	return args

@@ -123,7 +123,7 @@ tabix tools/svjedi.sort.vcf.gz
 
 10) Compare to NIST ground truth via truvari (v3.5.0):
 ```sh
-for tools in {sniffles1, sniffles2, cutefc, svjedi}
+for tools in {sniffles1,sniffles2,cutefc,svjedi}
 do
         truvari bench -b giab/HG002_SVs_Tier1_v0.6.filter.vcf.gz -c tools/$i.sort.vcf.gz --includebed giab/HG002_SVs_Tier1_v0.6.bed -o cmp -p 0 -r 2 -P 1 --sizemax 1000000
 done

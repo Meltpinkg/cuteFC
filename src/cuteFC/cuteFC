@@ -4,8 +4,8 @@
  * All rights Reserved, Designed By HIT-Bioinformatics   
  * @Title: cuteFC 
  * @author: tjiang & sqcao & zdzhang
- * @date: Feb. 6th 2024
- * @version V1.0.0
+ * @date: Jan. 16th 2025
+ * @version V1.0.1
 '''
 
 import pysam
@@ -193,6 +193,16 @@ def analysis_split_read(split_read, SV_size, RLength, read_name, candidate, MaxS
     #0			#1			#2			#3		#4	#5
     '''
     SP_list = sorted(split_read, key = lambda x:x[0])
+
+    if len(SP_list) > 0:
+        candidate["CLIP"].append((read_name,
+                                    0,
+                                    SP_list[0][2],
+                                    SP_list[0][4]))
+        candidate["CLIP"].append((read_name,
+                                    1,
+                                    SP_list[-1][3],
+                                    SP_list[-1][4]))
     
     # print(read_name)
     # for i in SP_list:
@@ -255,6 +265,17 @@ def analysis_split_read(split_read, SV_size, RLength, read_name, candidate, MaxS
                                             read_name,
                                             "DEL",
                                             ele_2[4]))
+                
+                if ele_2[2] - ele_1[3] >= SV_size and (ele_2[2] - ele_1[3] <= MaxSize or MaxSize == -1) and ele_2[0] - ele_1[1] >= SV_size and (ele_2[0] - ele_1[1] <= MaxSize or MaxSize == -1):
+                    if min(ele_2[2] - ele_1[3], ele_2[0] - ele_1[1]) / max(ele_2[2] - ele_1[3], ele_2[0] - ele_1[1]) > 0.9:
+                        candidate["CLIP"].append((read_name,
+                                                    2,
+                                                    ele_1[3],
+                                                    ele_2[4]))
+                        candidate["CLIP"].append((read_name,
+                                                    2,
+                                                    ele_2[2],
+                                                    ele_2[4]))
         else:
             trigger_INS_TRA = 1
             analysis_bnd(ele_1, ele_2, read_name, candidate["TRA"])
@@ -598,6 +619,8 @@ REFCHANGEOP=[CHANGETABLE[i][1] if i in CHANGETABLE.keys() else False for i in ra
 INDELOP=[(i==pysam.CDEL or i==pysam.CINS) for i in range(max(OPLIST)+1)]
 
 def parse_read(read, candidate, Chr_name, SV_size, min_mapq, max_split_parts, min_read_len, min_siglength, merge_del_threshold, merge_ins_threshold, MaxSize):
+    if 'c1h1fh_0ffc145a-e89b-a569-ebf6-651a1ba22dbe' in read.query_name:
+        print(read.query_name)
     if read.query_length < min_read_len:
         return []
     Combine_sig_in_same_read_ins = list()
@@ -651,6 +674,7 @@ def parse_read(read, candidate, Chr_name, SV_size, min_mapq, max_split_parts, mi
     generate_combine_sigs(Combine_sig_in_same_read_ins, Chr_name, read.query_name, "INS", candidate["INS"], merge_ins_threshold)
     generate_combine_sigs(Combine_sig_in_same_read_del, Chr_name, read.query_name, "DEL", candidate["DEL"], merge_del_threshold)
 
+    Supplementary_info = []
     if process_signal == 1 or process_signal == 2: # 0 / 16
         Tags = read.get_tags()
         if read.mapq >= min_mapq:
@@ -668,6 +692,16 @@ def parse_read(read, candidate, Chr_name, SV_size, min_mapq, max_split_parts, mi
                 Supplementary_info = i[1].split(';')[:-1]
                 organize_split_signal(primary_info, Supplementary_info, read.query_length, 
                     SV_size, min_mapq, max_split_parts, read.query_name, candidate, MaxSize, read.query_sequence)
+
+        if len(Supplementary_info) == 0 and read.mapq >= min_mapq:
+            candidate["CLIP"].append((read.query_name,
+                                        0,
+                                        read.reference_start,
+                                        Chr_name))
+            candidate["CLIP"].append((read.query_name,
+                                        1,
+                                        read.reference_end,
+                                        Chr_name))
     return candidate
 
 def init_reading_process(sam_path):
@@ -690,10 +724,11 @@ def single_pipe(sam_path, min_length, min_mapq, max_split_parts, min_read_len, t
     candidate["DUP"]=list()
     candidate["INV"]=list()
     candidate["TRA"]=list()
+    candidate["CLIP"]=list()
     reads_info_list= list()
     Chr_name = task[0]
     global samfile
-
+    samfile = pysam.AlignmentFile(sam_path)
     for read in samfile.fetch(Chr_name, task[1], task[2]):
         # handle_read(read, task[1], bed_regions, candidate, reads_info_list, Chr_name, min_length, min_mapq, max_split_parts, min_read_len, min_siglength, merge_del_threshold, merge_ins_threshold, MaxSize)
         if read.flag == 256 or read.flag == 272:
@@ -723,6 +758,8 @@ def single_pipe(sam_path, min_length, min_mapq, max_split_parts, min_read_len, t
     for sv_type in SVTYPES:
         with open("%ssignatures/%s%s.pickle"%(temp_dir,pid,sv_type),"ab") as f:
             pickle.dump(candidate[sv_type],f)
+    with open("%ssignatures/%sclip.pickle"%(temp_dir,pid),"ab") as f:
+        pickle.dump(candidate["CLIP"],f)
     with open("%ssignatures/%sreads.pickle"%(temp_dir,pid),"ab") as f:
         pickle.dump(reads_info_list,f)
     logging.info("Finished %s:%d-%d."%(Chr_name, task[1], task[2]))	
@@ -801,6 +838,14 @@ def process_process_sigs_type(args):
                 if len(type_candidates)!=0:
                     for ele in type_candidates:
                         line="%s\t%d\t%d\t%d\t%s\n"%(ele[-1], ele[0], ele[1], ele[2], ele[3])
+                        print(line,end="",file=f)
+    elif sv_type=="clip":
+        type_candidates.sort(key=lambda x: (x[3], x[2], x[0]))#reads file not deduped, might be resolved later
+        if write_old_sigs:
+            with open("%s/clip.sigs"%(temporary_dir), "w") as f:
+                if len(type_candidates)!=0:
+                    for ele in type_candidates:
+                        line="%s\t%d\t%d\t%s\n"%(ele[3], ele[2], ele[1], ele[0])
                         print(line,end="",file=f)
     index={}
     reads_count={}
@@ -983,6 +1028,7 @@ def main_ctrl(args, argv):
     else:
         temporary_dir = args.work_dir+'/'
     # check the temporary files
+    #'''
     if not os.path.isfile(args.reference):
         raise FileNotFoundError("[Errno 2] No such file: '%s'"%args.reference)
     if not os.path.exists(args.work_dir):
@@ -992,7 +1038,7 @@ def main_ctrl(args, argv):
             raise FileExistsError("[Errno 2] File exists: '%s'"%(temporary_dir+item+'.sigs'))
         if os.path.exists(temporary_dir + item + '.pickle'):
             raise FileExistsError("[Errno 2] File exists: '%s'"%(temporary_dir+item+'.pickle'))
-
+    #'''
     samfile = pysam.AlignmentFile(args.input)
     contig_num = len(samfile.get_index_statistics())
     logging.info("The total number of chromsomes: %d"%(contig_num))
@@ -1058,12 +1104,12 @@ def main_ctrl(args, argv):
     analysis_pools.close()
     analysis_pools.join()
     logging.info("Rebuilding signatures of structural variants.")
-    #'''
     analysis_pools = Pool(processes=int(args.threads))
     paras=[]
     for sv_type in SVTYPES:
         paras.append((sv_type,temporary_dir,pids,args.write_old_sigs))
     paras.append(("reads",temporary_dir,pids,args.write_old_sigs))
+    paras.append(("clip",temporary_dir,pids,args.write_old_sigs))
     results=analysis_pools.map_async(process_process_sigs_type, paras)
     analysis_pools.close()
     analysis_pools.join()
@@ -1080,6 +1126,10 @@ def main_ctrl(args, argv):
     del candidates
     gc.collect()
     logging.info("Rebuilding signatures completed.")
+    #'''
+    # with open("%s/sigindex.pickle"%temporary_dir, "rb") as f:
+    #     sigs_index = pickle.load(f)
+
     result = list()
 
     if args.Ivcf != None:
@@ -1095,7 +1145,7 @@ def main_ctrl(args, argv):
         threshold_gloab_dict['DEL'] = args.diff_ratio_merging_DEL
         
         result = force_calling_chrom(args.Ivcf, temporary_dir,
-                         max_cluster_bias_dict, threshold_gloab_dict, args.gt_round, args.read_range, args.threads, sigs_index)
+                         max_cluster_bias_dict, threshold_gloab_dict, args.gt_round, args.read_range, args.threads, args.detect_large_ins, sigs_index)
 
     else:
 

@@ -6,6 +6,7 @@ import time
 import logging
 import numpy as np
 import pickle
+import bisect
 from sklearn.cluster import KMeans
 
 def parse_svtype(sv_type):
@@ -271,8 +272,6 @@ def find_in_indel_list(var_type, var_list, bias_origin, pos, sv_end, threshold_g
                                                     read_tag[read_id][i][4]])
 
     read_tag2SortedList = sorted(read_tag2SortedList, key = lambda x:x[2])
-    if pos == debug_pos:
-        print(read_tag2SortedList)
     global_len = [i[2] for i in read_tag2SortedList]
     DISCRETE_THRESHOLD_LEN_CLUSTER_TEMP = threshold_gloab * np.mean(global_len)
     if var_type == 'DEL':
@@ -317,17 +316,11 @@ def find_in_indel_list(var_type, var_list, bias_origin, pos, sv_end, threshold_g
         else:
             final_alleles = allele_collect[allele_idx]
 
-        if pos == debug_pos:
-            print(allele_idx)
-            print(final_alleles[:2])
         if multi_allele:
             bimodal_data = np.array(final_alleles[1])
             if len(bimodal_data) > 1 and final_alleles[1][0] != final_alleles[1][-1]:
                 model = KMeans(n_clusters=2, init=np.array([int(len(bimodal_data)/4), int(len(bimodal_data)/4*3)]).reshape(-1, 1), n_init=1)
-                # try:
                 model.fit(bimodal_data.reshape(-1, 1))
-                # except:
-                #     print('reshape error')
                 labels = model.labels_
                 if pos == debug_pos:
                     print(labels)
@@ -359,9 +352,6 @@ def find_in_indel_list(var_type, var_list, bias_origin, pos, sv_end, threshold_g
                                     final_alleles_filter[j].append(final_alleles[j][i])
                 if len(final_alleles_filter[0]) > 0:
                     final_alleles = final_alleles_filter
-                if pos == debug_pos:
-                    print('final alleles:')
-                    print(final_alleles[:2])
         if len(final_alleles[3]) > 0:
             read_id_set = set(final_alleles[3])
             CIPOS = cal_CIPOS(np.std(final_alleles[0]), len(final_alleles[0]))
@@ -372,9 +362,6 @@ def find_in_indel_list(var_type, var_list, bias_origin, pos, sv_end, threshold_g
             search_start = min(final_alleles[0])
             search_end = max(final_alleles[0])
             search_threshold = min(abs(pos - search_start), abs(pos - search_end))
-            if pos == debug_pos:
-                print('search_start:%f'%(search_start))
-                print(final_alleles[0])
         else:
             read_id_set = set()
             CIPOS = "-0,0"
@@ -428,20 +415,12 @@ def find_in_indel_list(var_type, var_list, bias_origin, pos, sv_end, threshold_g
         else:
             final_alleles = allele_collect[allele_idx]
 
-        if pos == debug_pos:
-            print(allele_idx)
-            print(final_alleles[:2])
         if multi_allele:
             bimodal_data = np.array(final_alleles[1])
             if len(bimodal_data) > 1 and final_alleles[1][0] != final_alleles[1][-1]:
                 model = KMeans(n_clusters=2, init=np.array([int(len(bimodal_data)/4), int(len(bimodal_data)/4*3)]).reshape(-1, 1), n_init=1)
-                # try:
                 model.fit(bimodal_data.reshape(-1, 1))
-                # except:
-                #     print('reshape error')
                 labels = model.labels_
-                if pos == debug_pos:
-                    print(labels)
                 cate = 0
                 for i in range(0, len(labels) - 1):
                     if labels[i] != labels[i + 1]:
@@ -470,9 +449,6 @@ def find_in_indel_list(var_type, var_list, bias_origin, pos, sv_end, threshold_g
                                     final_alleles_filter[j].append(final_alleles[j][i])
                 if len(final_alleles_filter[0]) > 0:
                     final_alleles = final_alleles_filter
-                if pos == debug_pos:
-                    print('final alleles:')
-                    print(final_alleles[:2])
         if len(final_alleles[3]) > 0:
             read_id_set = set(final_alleles[3])
             CIPOS = cal_CIPOS(np.std(final_alleles[0]), len(final_alleles[0]))
@@ -494,6 +470,19 @@ def find_in_indel_list(var_type, var_list, bias_origin, pos, sv_end, threshold_g
     # return list(read_id_set), search_threshold, CIPOS, CILEN
     return list(read_id_set), search_start, search_end, CIPOS, CILEN
 
+def add_clip(read_id_list, clips_list, sv_start, sigs_bias):
+    sigs_bias = 100
+    key_values = [x[2] for x in clips_list]
+    left = bisect.bisect_left(key_values, sv_start - sigs_bias)
+    right = bisect.bisect_right(key_values, sv_start + sigs_bias)
+    read_id_set = set(read_id_list)
+    for i in range(left, right+1, 1):
+        if abs(clips_list[i][2] - sv_start) > sigs_bias:
+            continue
+        if clips_list[i][0] not in read_id_set:
+            read_id_set.add(clips_list[i][0])
+            read_id_list.append(clips_list[i][0])
+
 def generate_dispatch(reads_count, chrom_list):
     dispatch = [[]]
     cur_count = 0
@@ -514,7 +503,7 @@ def generate_dispatch(reads_count, chrom_list):
     return dispatch
 
 
-def force_calling_chrom(ivcf_path, temporary_dir, max_cluster_bias_dict, threshold_gloab_dict, gt_round, read_range, threads, sigs_index):
+def force_calling_chrom(ivcf_path, temporary_dir, max_cluster_bias_dict, threshold_gloab_dict, gt_round, read_range, threads, detect_large_ins, sigs_index):
     logging.info('Check the parameter -Ivcf: OK.')
     logging.info('Enable to perform force calling.')
     if sigs_index==None:
@@ -547,7 +536,7 @@ def force_calling_chrom(ivcf_path, temporary_dir, max_cluster_bias_dict, thresho
     reads_count = sigs_index["reads_count"]
     reads_count = sorted(reads_count.items(), key=lambda x:x[1])
     dispatch = generate_dispatch(reads_count, svs_tobe_genotyped.keys())
-    logging.info('finish dispatch in {}.'.format(time.time() - start_time))
+    # logging.info('finish dispatch in {}.'.format(time.time() - start_time))
 
     # force calling
     pool_result = list()
@@ -561,7 +550,7 @@ def force_calling_chrom(ivcf_path, temporary_dir, max_cluster_bias_dict, thresho
                 genotype_sv_list[chrom] = svs_tobe_genotyped[chrom]
         if len(genotype_sv_list) == 0:
             continue
-        fx_para = [(chroms, genotype_sv_list, temporary_dir, max_cluster_bias_dict, threshold_gloab_dict, gt_round, sigs_index, read_range, svs_multi)]
+        fx_para = [(chroms, genotype_sv_list, temporary_dir, max_cluster_bias_dict, threshold_gloab_dict, gt_round, sigs_index, read_range, svs_multi, detect_large_ins)]
         pool_result.append(process_pool.map_async(solve_fc_wrapper, fx_para))
     process_pool.close()
     process_pool.join()
@@ -572,8 +561,10 @@ def force_calling_chrom(ivcf_path, temporary_dir, max_cluster_bias_dict, thresho
 
 def solve_fc_wrapper(args):
     return solve_fc(*args)
-def solve_fc(chrom_list, svs_dict, temporary_dir, max_cluster_bias_dict, threshold_gloab_dict, gt_round, sigs_index, read_range, svs_multi):
+def solve_fc(chrom_list, svs_dict, temporary_dir, max_cluster_bias_dict, threshold_gloab_dict, gt_round, sigs_index, read_range, svs_multi, detect_large_ins):
     reads_info = dict() # [10000, 10468, 0, 'm54238_180901_011437/52298335/ccs']
+    clips_info = dict() # ???
+    # parse reads
     readsfile = open("%sreads.pickle"%(temporary_dir), 'rb')
     for chrom in chrom_list:
         try:
@@ -582,6 +573,16 @@ def solve_fc(chrom_list, svs_dict, temporary_dir, max_cluster_bias_dict, thresho
         except:
             reads_info[chrom] = []
     readsfile.close()
+    if detect_large_ins:
+        # parse clips for large INS
+        clipfile = open("%sclip.pickle"%(temporary_dir), 'rb')
+        for chrom in chrom_list:
+            try:
+                clipfile.seek(sigs_index["clip"][chrom])
+                clips_info[chrom]=pickle.load(clipfile)
+            except:
+                clips_info[chrom] = []
+        clipfile.close()
     sv_dict = dict()
     for sv_type in ["DEL", "DUP", "INS", "INV", "TRA"]:
         sv_dict[sv_type] = parse_sigs_chrom(sv_type, temporary_dir, chrom_list, sigs_index)
@@ -617,6 +618,8 @@ def solve_fc(chrom_list, svs_dict, temporary_dir, max_cluster_bias_dict, thresho
                 else:
                     multi_allele = False
                 read_id_list, search_start, search_end, CIPOS, CILEN = find_in_indel_list(sv_type, search_id_list, sigs_bias, sv_start, sv_len, threshold_gloab_dict[sv_type], multi_allele)
+                if detect_large_ins:
+                    add_clip(read_id_list, clips_info[chrom] if chrom in clips_info else [], sv_start, sigs_bias)
             else:
                 sv_temp = sv_type
                 sigs_bias = max_cluster_bias_dict[sv_type if sv_type != 'BND' else 'TRA']
@@ -658,7 +661,7 @@ def solve_fc(chrom_list, svs_dict, temporary_dir, max_cluster_bias_dict, thresho
         assert len(iteration_dict) == len(read_id_dict), "overlap length error"
         assert len(cover_dict) == len(svs_dict[chrom]), "cover length error"
         assert len(overlap_dict) == len(svs_dict[chrom]), "overlap length error"
-        assign_list = assign_gt_fc(iteration_dict, primary_num_dict, cover_dict, overlap_dict, read_id_dict, svtype_id_dict)
+        assign_list = assign_gt_fc(iteration_dict, primary_num_dict, cover_dict, overlap_dict, read_id_dict, svtype_id_dict, detect_large_ins)
         for i in range(len(svs_dict[chrom])):
             assert len(assign_list[i]) == 6, "assign genotype error"
             record = svs_dict[chrom][i]
