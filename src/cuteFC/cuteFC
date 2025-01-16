@@ -619,8 +619,6 @@ REFCHANGEOP=[CHANGETABLE[i][1] if i in CHANGETABLE.keys() else False for i in ra
 INDELOP=[(i==pysam.CDEL or i==pysam.CINS) for i in range(max(OPLIST)+1)]
 
 def parse_read(read, candidate, Chr_name, SV_size, min_mapq, max_split_parts, min_read_len, min_siglength, merge_del_threshold, merge_ins_threshold, MaxSize):
-    if 'c1h1fh_0ffc145a-e89b-a569-ebf6-651a1ba22dbe' in read.query_name:
-        print(read.query_name)
     if read.query_length < min_read_len:
         return []
     Combine_sig_in_same_read_ins = list()
@@ -728,7 +726,7 @@ def single_pipe(sam_path, min_length, min_mapq, max_split_parts, min_read_len, t
     reads_info_list= list()
     Chr_name = task[0]
     global samfile
-    samfile = pysam.AlignmentFile(sam_path)
+
     for read in samfile.fetch(Chr_name, task[1], task[2]):
         # handle_read(read, task[1], bed_regions, candidate, reads_info_list, Chr_name, min_length, min_mapq, max_split_parts, min_read_len, min_siglength, merge_del_threshold, merge_ins_threshold, MaxSize)
         if read.flag == 256 or read.flag == 272:
