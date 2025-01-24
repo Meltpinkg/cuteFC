@@ -1,6 +1,6 @@
 ''' 
  * All rights Reserved, Designed By HIT-Bioinformatics   
- * @Title:  cuteSV_Description.py
+ * @Title:  cuteFC_Description.py
  * @author: tjiang & sqcao & zdzhang
  * @date: Jan. 16th 2025
  * @version V1.0.1

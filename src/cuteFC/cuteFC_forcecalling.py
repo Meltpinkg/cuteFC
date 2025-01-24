@@ -1,4 +1,4 @@
-from cuteFC.cuteSV_genotype import cal_CIPOS, overlap_cover, assign_gt_fc
+from cuteFC.cuteFC_genotype import cal_CIPOS, overlap_cover, assign_gt_fc
 from multiprocessing import Pool
 from pysam import VariantFile
 import math
