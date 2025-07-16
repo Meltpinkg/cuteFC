@@ -94,10 +94,8 @@ For more detailed implementation of SV benchmarks, we show an example [here](htt
 
 ---
 ### Citation
-Jiang T et al. Long-read-based human genomic structural variation detection with cuteSV. Genome Biol 21, 189 (2020). https://doi.org/10.1186/s13059-020-02107-y
 
-Jiang T et al. Re-genotyping structural variants through an accurate force-calling method. bioRxiv 2022.08.29.505534; doi: https://doi.org/10.1101/2022.08.29.505534
-
+Jiang, T., Cao, S., Liu, Y. _et al_. cuteFC: regenotyping structural variants through an accurate and efficient force-calling method. _Genome Biol_ 26, 166 (2025). https://doi.org/10.1186/s13059-025-03642-2
 	
 ---
 ### Contact
