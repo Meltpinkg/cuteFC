@@ -94,7 +94,8 @@ For more detailed implementation of SV benchmarks, we show an example [here](htt
 
 ---
 ### Citation
-Jiang, T., Cao, S., Liu, Y. et al. cuteFC: regenotyping structural variants through an accurate and efficient force-calling method. Genome Biol 26, 166 (2025). https://doi.org/10.1186/s13059-025-03642-2
+
+Jiang, T., Cao, S., Liu, Y. _et al_. cuteFC: regenotyping structural variants through an accurate and efficient force-calling method. _Genome Biol_ 26, 166 (2025). https://doi.org/10.1186/s13059-025-03642-2
 	
 ---
 ### Contact
