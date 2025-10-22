@@ -17,13 +17,13 @@
 ---	
 ### Installation
 
-	$ git clone https://github.com/tjiangHIT/cuteFC.git && cd cuteFC/ && python setup.py install 
+	$ git clone https://github.com/Meltpinkg/cuteFC.git && cd cuteFC/ && python setup.py install 
 
 ---	
 ### Introduction
 Accurate genotype assignment for SVs remains challenging, especially in large-scale joint calling. We develop cuteFC to achieve accurate and efficient regenotyping of SVs through a force-calling approach. Benchmarking results demonstrated that cuteFC outperforms state-of-the-art methods with 2%~5% higher F1 scores. SV joint-calling within the cohort revealed that cuteFC constructs the higher-quality genomic atlas with minimal computational resources. These results prove cuteFC to be a scalable and robust approach suitable for clinical applications, population studies, and related fields. 
 
-For more detailed implementation of SV benchmarks, we show an example [here](https://github.com/tjiangHIT/cuteFC/tree/master/src/documentation).
+For more detailed implementation of SV benchmarks, we show an example [here](https://github.com/Meltpinkg/cuteFC/tree/master/src/documentation).
 
 ---
 ### Dependence
@@ -94,10 +94,7 @@ For more detailed implementation of SV benchmarks, we show an example [here](htt
 
 ---
 ### Citation
-Jiang T et al. Long-read-based human genomic structural variation detection with cuteSV. Genome Biol 21, 189 (2020). https://doi.org/10.1186/s13059-020-02107-y
-
-Jiang T et al. Re-genotyping structural variants through an accurate force-calling method. bioRxiv 2022.08.29.505534; doi: https://doi.org/10.1101/2022.08.29.505534
-
+Jiang, T., Cao, S., Liu, Y. et al. cuteFC: regenotyping structural variants through an accurate and efficient force-calling method. Genome Biol 26, 166 (2025). https://doi.org/10.1186/s13059-025-03642-2
 	
 ---
 ### Contact
