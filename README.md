@@ -1,4 +1,11 @@
-# cuteFC
+# cuteFC 
+
+[![PyPI version](https://badge.fury.io/py/cuteFC.svg)](https://badge.fury.io/py/cuteFC)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/cutefc/badges/version.svg)](https://anaconda.org/bioconda/cutefc)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/cutefc/badges/license.svg)](https://anaconda.org/bioconda/cutefc)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/cutefc/badges/platforms.svg)](https://anaconda.org/bioconda/cutefc)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/cutefc/badges/latest_release_date.svg)](https://anaconda.org/bioconda/cutefc)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/cutefc/badges/downloads.svg)](https://anaconda.org/bioconda/cutefc)
 
 ---
 ### Getting Start
