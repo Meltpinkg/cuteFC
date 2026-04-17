@@ -57,19 +57,25 @@ def parse_record(record):
     # read end from 1.BND-alt 2.END= 3.start+svlen
     if sv_type == 'TRA' or sv_type == 'BND':
         try:
+            '''
+            *	TYPE A:		N[chr:pos[	*
+            *	TYPE B:		N]chr:pos]	*
+            *	TYPE C:		[chr:pos[N	*
+            *	TYPE D:		]chr:pos]N	*
+            '''
             tra_alt = str(record.alts[0])
-            if tra_alt[0] == 'N':
-                if tra_alt[1] == '[':
+            if tra_alt[0].isalpha():
+                if tra_alt[-1] == '[':
                     tra_type = 'A'
-                else:
+                    tra_alt = tra_alt[2:-1]
+                elif tra_alt[-1] == ']':
                     tra_type = 'B'
+                    tra_alt = tra_alt[2:-1]
             elif tra_alt[0] == '[':
                 tra_type = 'C'
+                tra_alt = tra_alt[1:-2]
             else:
                 tra_type = 'D'
-            if tra_alt[0] == 'N':
-                tra_alt = tra_alt[2:-1]
-            else:
                 tra_alt = tra_alt[1:-2]
             if ':' in tra_alt:
                 chrom2 = tra_alt.split(':')[0]
