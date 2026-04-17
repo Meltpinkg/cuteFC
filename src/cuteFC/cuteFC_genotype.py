@@ -1,4 +1,3 @@
-
 from math import log10
 import numpy as np
 import pysam

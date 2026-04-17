@@ -2,12 +2,12 @@
  * All rights Reserved, Designed By HIT-Bioinformatics   
  * @Title:  cuteFC_Description.py
  * @author: tjiang & sqcao & zdzhang
- * @date: Jan. 16th 2025
- * @version V1.0.1
+ * @date: Oct. 23rd 2025
+ * @version V1.0.2
 '''
 import argparse
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 
 class cuteFCdp(object):
     '''
@@ -178,10 +178,6 @@ def parseArgs(argv):
         help = "Do not merge breakpoints with basepair identity more than [%(default)s] for insertion.", 
         default = 0.3, 
         type = float)
-    # GroupAdvanced.add_argument('--diff_ratio_filtering_INS', 
-    # 	help = "Filter breakpoints with basepair identity less than [%(default)s] for insertion.", 
-    # 	default = 0.6, 
-    # 	type = float)
 
     # ++++++DEL++++++
     GroupAdvanced.add_argument('--max_cluster_bias_DEL', 
@@ -192,10 +188,6 @@ def parseArgs(argv):
         help = "Do not merge breakpoints with basepair identity more than [%(default)s] for deletion.", 
         default = 0.5, 
         type = float)
-    # GroupAdvanced.add_argument('--diff_ratio_filtering_DEL', 
-    # 	help = "Filter breakpoints with basepair identity less than [%(default)s] for deletion.", 
-    # 	default = 0.7, 
-    # 	type = float)
 
     # ++++++INV++++++
     GroupAdvanced.add_argument('--max_cluster_bias_INV', 

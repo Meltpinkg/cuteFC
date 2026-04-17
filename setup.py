@@ -7,7 +7,7 @@ with open('README.md') as f:
 
 setup(
     name = "cuteFC",
-    version = "1.0.1",
+    version = "1.0.2",
     description = "Regenotyping structural variants through an accurate and efficient force-calling method",
     author = "Jiang Tao & Cao Shuqi",
     author_email = "tjiang@hit.edu.cn",
